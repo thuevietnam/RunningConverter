@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pace & Distance Converter - Nguyen Tien Duan</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: url('AnhNen.jpg') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1a252f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* KHUNG CHỨA CHÍNH: Đã sửa lỗi để không bao giờ bị mất nút */
+        .phone-container {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 20px;
+            padding: 25px 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            border: 2px solid #FFD700;
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .author {
+            font-size: 13px;
+            color: #FFD700;
+            font-style: italic;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #00E676;
+            box-shadow: 0 0 8px rgba(0,230,118,0.3);
+        }
+
+        input:disabled, select:disabled {
+            background: rgba(30, 41, 59, 0.4);
+            border-color: rgba(255,255,255,0.05);
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .colon {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00E676;
+        }
+
+        .unit-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .input-sub-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* KHU VỰC KẾT QUẢ */
+        .result-box {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            background: rgba(0, 230, 118, 0.1);
+            border: 1px dashed #00E676;
+            border-radius: 10px;
+            padding: 14px;
+            display: none; 
+        }
+
+        .result-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #00E676;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .result-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        /* KHU VỰC NÚT BẤM CỐ ĐỊNH */
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-main {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-convert {
+            flex: 1.3;
+            background: #00E676;
+            color: #0f172a;
+        }
+
+        .btn-clear {
+            flex: 0.7;
+            background: #ff4757;
+            color: #fff;
+        }
+
+        select option {
+            background: #1e293b;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        
+        <!-- LOGO & TIÊU ĐỀ -->
+        <div class="header">
+            <img class="logo" src="Logo.png" alt="Logo" onerror="this.style.background='rgba(255,255,255,0.1)';">
+            <h1>Pace &amp; Distance Converter</h1>
+            <div class="author">Ý tưởng bởi: Nguyễn Tiến Duẩn</div>
+        </div>
+
+        <!-- 1. CHỌN CỰ LY -->
+        <div class="input-group">
+            <label for="select-distance">Cự ly phổ thông:</label>
+            <select id="select-distance" onchange="handleDistanceSelect()">
+                <option value="custom">-- Cự ly bất kỳ (Tự nhập ở dưới) --</option>
+                <option value="0.1">100 m</option>
+                <option value="0.4">400 m</option>
+                <option value="0.8">800 m</option>
+                <option value="1">1000 m</option>
+                <option value="1.5">1500 m</option>
+                <option value="3">3000 m</option>
+                <option value="5">5000 m</option>
+                <option value="10">10 km</option>
+                <option value="15">15 km</option>
+                <option value="21.1">21.1 km (Half Marathon)</option>
+                <option value="42.195">42.195 km (Marathon)</option>
+                <option value="50">50 km</option>
+                <option value="60">60 km</option>
+                <option value="70">70 km</option>
+                <option value="100">100 km</option>
+                <option value="160">160 km</option>
+            </select>
+        </div>
+
+        <!-- QUÃNG ĐƯỜNG BẤT KỲ -->
+        <div class="input-group">
+            <label for="distance">Quãng đường bất kỳ:</label>
+            <div class="flex-row">
+                <input style="flex: 2;" type="number" id="distance" placeholder="Nhập số độ dài" step="any">
+                <select style="flex: 1;" id="distance-unit">
+                    <option value="km">km</option>
+                    <option value="m">m</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 2. CHỌN KIỂU QUY ĐỔI -->
+        <div class="input-group">
+            <label for="convert-type">Kiểu quy đổi muốn tính:</label>
+            <select id="convert-type" onchange="handleConvertTypeChange()">
+                <option value="time_to_pace">1. Nhập Thời gian ➔ Tính Tốc độ (Pace)</option>
+                <option value="pace_to_time">2. Nhập Tốc độ (Pace) ➔ Tính Thời gian</option>
+            </select>
+        </div>
+
+        <!-- 3. KHU VỰC NHẬP THÔNG TIN BIẾN ĐỔI -->
+        
+        <!-- Khung nhập Thời Gian -->
+        <div id="form-time" class="input-group">
+            <label>Nhập tổng thời gian chạy đạt được:</label>
+            <div class="flex-row">
+                <div class="input-sub-box">
+                    <input type="number" id="time-hour" placeholder="Giờ" min="0" value="0">
+                    <span class="unit-label">Giờ</span>
+                </div>
+                <div class="input-sub-box">
+                    <input type="number" id="time-min" placeholder="Phút" min="0" max="59" value="0">
+                    <span class="unit-label">Phút</span>
+                </div>
+                <div class="input-sub-box">
+                    <input type="number" id="time-sec" placeholder="Giây" min="0" max="59" value="0">
+                    <span class="unit-label">Giây</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Khung nhập Tốc độ / Pace -->
+        <div id="form-pace" class="input-group" style="display: none;">
+            <label>Nhập Tốc độ / Pace mục tiêu:</label>
+            <div class="flex-row">
+                <div class="input-sub-box">
+                    <input type="number" id="pace-min" placeholder="Phút" min="0" value="0">
+                    <span class="unit-label">Phút/km</span>
+                </div>
+                <span class="colon" style="margin-bottom: 15px;">:</span>
+                <div class="input-sub-box">
+                    <input type="number" id="pace-sec" placeholder="Giây" min="0" max="59" value="0">
+                    <span class="unit-label">Giây/km</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KẾT QUẢ ĐẦU RA -->
+        <div id="result-area" class="result-box">
+            <div class="result-title" id="result-label">KẾT QUẢ:</div>
+            <div class="result-value" id="result-display">--</div>
+        </div>
+
+        <!-- HỆ THỐNG NÚT BẤM -->
+        <div class="btn-container">
+            <button class="btn-main btn-convert" onclick="executeConversion()">Quy Đổi Thông Số</button>
+            <button class="btn-main btn-clear" onclick="clearAll()">Xóa</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Gọi hàm kiểm tra ngay khi mở trang để thiết lập trạng thái ban đầu
+        window.onload = function() {
+            handleDistanceSelect();
+            handleConvertTypeChange();
+        };
+
+        // Hàm xử lý việc Chọn/Khóa ô nhập quãng đường
+        function handleDistanceSelect() {
+            const selectValue = document.getElementById('select-distance').value;
+            const distInput = document.getElementById('distance');
+            const unitSelect = document.getElementById('distance-unit');
+
+            if (selectValue !== "custom") {
+                // Nếu chọn cự ly mẫu: Tự điền, đổi đơn vị về km và Khóa ô nhập lại
+                distInput.value = selectValue;
+                unitSelect.value = "km";
+                distInput.disabled = true;
+                unitSelect.disabled = true;
+            } else {
+                // Nếu chọn Tự nhập: Mở khóa và xóa trống trường nhập dữ liệu
+                distInput.value = "";
+                distInput.disabled = false;
+                unitSelect.disabled = false;
+            }
+            document.getElementById('result-area').style.display = "none";
+        }
+
+        // Hàm xử lý chuyển đổi mượt mà giữa 2 kiểu nhập liệu
+        function handleConvertTypeChange() {
+            const type = document.getElementById('convert-type').value;
+            const formTime = document.getElementById('form-time');
+            const formPace = document.getElementById('form-pace');
+
+            if (type === "time_to_pace") {
+                formTime.style.display = "block";
+                formPace.style.display = "none";
+            } else {
+                formTime.style.display = "none";
+                formPace.style.display = "block";
+            }
+            document.getElementById('result-area').style.display = "none";
+        }
+
+        // Logic xử lý quy đổi toán học chính xác
+        function executeConversion() {
+            let distance = parseFloat(document.getElementById('distance').value);
+            if (isNaN(distance) || distance <= 0) {
+                alert("Vui lòng chọn hoặc nhập quãng đường hợp lệ trước khi quy đổi!");
+                return;
+            }
+
+            let unit = document.getElementById('distance-unit').value;
+            let distanceInKm = (unit === "m") ? distance / 1000 : distance;
+
+            const type = document.getElementById('convert-type').value;
+            const resultArea = document.getElementById('result-area');
+            const resultDisplay = document.getElementById('result-display');
+            const resultLabel = document.getElementById('result-label');
+
+            if (type === "time_to_pace") {
+                let h = parseInt(document.getElementById('time-hour').value) || 0;
+                let m = parseInt(document.getElementById('time-min').value) || 0;
+                let s = parseInt(document.getElementById('time-sec').value) || 0;
+                let totalSeconds = (h * 3600) + (m * 60) + s;
+
+                if (totalSeconds <= 0) {
+                    alert("Vui lòng nhập tổng thời gian chạy lớn hơn 0!");
+                    return;
+                }
+
+                let paceTotalSec = totalSeconds / distanceInKm;
+                let paceMin = Math.floor(paceTotalSec / 60);
+                let paceSec = Math.round(paceTotalSec % 60);
+                if (paceSec === 60) { paceMin += 1; paceSec = 0; }
+                
+                let speedKmh = distanceInKm / (totalSeconds / 3600);
+                let strPaceSec = paceSec < 10 ? "0" + paceSec : paceSec;
+
+                resultLabel.innerText = "Tốc độ (Pace) cần đạt được:";
+                resultDisplay.innerHTML = `Pace ${paceMin}:${strPaceSec} <span style='font-size:14px; color:#cbd5e1;'>/km</span><br><span style='font-size:15px; color:#00E676; font-weight:normal;'>Vận tốc tương đương: ${speedKmh.toFixed(2)} km/h</span>`;
+            } 
+            else {
+                let pMin = parseInt(document.getElementById('pace-min').value) || 0;
+                let pSec = parseInt(document.getElementById('pace-sec').value) || 0;
+                let paceSeconds = (pMin * 60) + pSec;
+
+                if (paceSeconds <= 0) {
+                    alert("Vui lòng nhập Tốc độ/Pace hợp lệ!");
+                    return;
+                }
+
+                let totalSec = paceSeconds * distanceInKm;
+                let finalH = Math.floor(totalSec / 3600);
+                let finalM = Math.floor((totalSec % 3600) / 60);
+                let finalS = Math.round(totalSec % 60);
+
+                resultLabel.innerText = "Tổng thời gian hoàn thành cự ly:";
+                resultDisplay.innerText = `${finalH} Giờ : ${finalM} Phút : ${finalS} Giây`;
+            }
+
+            resultArea.style.display = "block";
+        }
+
+        // Hàm Reset dữ liệu
+        function clearAll() {
+            document.getElementById('select-distance').value = "custom";
+            handleDistanceSelect();
+            
+            document.getElementById('time-hour').value = "0";
+            document.getElementById('time-min').value = "0";
+            document.getElementById('time-sec').value = "0";
+            
+            document.getElementById('pace-min').value = "0";
+            document.getElementById('pace-sec').value = "0";
+            
+            document.getElementById('result-area').style.display = "none";
+        }
+    </script>
+</body>
+</html>
